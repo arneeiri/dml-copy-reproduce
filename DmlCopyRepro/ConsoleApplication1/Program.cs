@@ -18,7 +18,6 @@ namespace ConsoleApplication1
             ServicePointManager.DefaultConnectionLimit = Environment.ProcessorCount * 8;
             ServicePointManager.Expect100Continue = false;
 
-            var stopwatch = Stopwatch.StartNew();
             var storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("FileStorageConnectionString"));
             var cloudFileClient = storageAccount.CreateCloudFileClient();
             var fileShare = cloudFileClient.GetShareReference("myshare");
@@ -28,6 +27,8 @@ namespace ConsoleApplication1
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
             var containerReference = cloudBlobClient.GetContainerReference("myblobcontainer");
             var cloudBlobDirectory = containerReference.GetDirectoryReference("targetdir");
+
+            var stopwatch = Stopwatch.StartNew();
             TransferManager.CopyDirectoryAsync(directory, cloudBlobDirectory, true, new CopyDirectoryOptions { Recursive = true }, new DirectoryTransferContext()).Wait();
             stopwatch.Stop();
             Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: Copy files took {stopwatch.ElapsedMilliseconds}ms");
